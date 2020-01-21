@@ -5,9 +5,8 @@
 
 template<int COLS, class T>
 class Row{
-private:
-    T r[COLS];
 public:
+    T r[COLS];
     typedef T * iterator;
     typedef const T * const_interator;
     Row(){};
@@ -52,10 +51,10 @@ public:
         }
     }
 
-    Matrix(Matrix& mat){
+    Matrix(const Matrix& mat){
         for(int row = 0; row < ROWS; row++){
             for(int col = 0; col < COLS; col++){
-                (*this)[row][col] = mat[row][col];
+                (*this)[row][col] = mat.m[row].r[col];
             }
         }
     }
@@ -83,11 +82,20 @@ public:
            }
        }
 
-   Row<COLS, T>& operator[](int row){
+    Row<COLS, T>& operator[](int row){
         return m[row];
     };
     iterator begin(){return &m[0];}
     iterator end(){return &m[ROWS];}
+
+    Matrix& operator=(Matrix other){
+        for(int row = 0; row < ROWS; row++){
+            for(int col = 0; col < COLS; col++){
+                (*this)[row][col] = other[row][col];
+            }
+        }
+        return (*this);
+    }
 
     void print(){
         int counter = 0;
@@ -112,7 +120,7 @@ public:
 
 
     // Basic Calculation
-Matrix operator+(Matrix other){
+    Matrix operator+(Matrix other){
     T res[ROWS][COLS];
         for(int row = 0; row < ROWS; row++){
             for(int col = 0; col < COLS; col++){
@@ -134,9 +142,8 @@ Matrix operator+(Matrix other){
         return result;
    }
 
-   /*
    template<int OTHER_COLS>
-   Matrix<ROWS, OTHER_COLS, T> operator*(Matrix<COLS, OTHER_COLS, T> other){
+   Matrix<ROWS, OTHER_COLS, T> operator*(Matrix<COLS, OTHER_COLS, T>  other){
        T result[ROWS][OTHER_COLS];
        for(int row = 0; row < ROWS; row++){
            for(int col = 0; col < OTHER_COLS; col++){
@@ -150,7 +157,7 @@ Matrix operator+(Matrix other){
        Matrix<ROWS, OTHER_COLS, T> m(result);
        return m;
    }
-*/
+
    Matrix operator-(Matrix other){
        Matrix result;
        result = (*this) + other;
