@@ -2,7 +2,6 @@
 
 namespace GAUSS{
 
-
     template<int N, class T>
         Matrix<N,1,T> backSub(Matrix<N,N,T> R, Matrix<N,1,T> b){
             Matrix<N,1,T> x;
@@ -15,11 +14,12 @@ namespace GAUSS{
             }
             return x;
 
+
         }
 
     template<int N, class T>
         Matrix<N, 1, T> solve(Matrix<N, N, T> A, Matrix<N, 1, T> b){
-            Matrix<N, 1, T> x;
+            Matrix<N, 1, T> x(b);
             // Gauss elimination
             for(int j = 0; j < N-1; j++){
                 for(int i = j+1; i < N; i++){
@@ -27,6 +27,11 @@ namespace GAUSS{
                     b[i][0] = b[i][0] - l * b[j][0];
                     for(int k = j; k < N; k++){
                         A[i][k] = A[i][k] - l * A[j][k];
+                        if(j != k && A[i][k] == 0){
+                            std::cout << "Error: Matrix is not regular. Returned right-side vector b" 
+                                << std::endl;
+                            return x;
+                        }
                     }
                 }
             }

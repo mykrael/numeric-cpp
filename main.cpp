@@ -4,15 +4,17 @@ using namespace std;
 #include "gauss-elimination.h"
 
 int main(){
-    Matrix<3,3,double> A(2.0,2.0,2.0,4.0,5.0,6.0,7.0,8.0,11.0);
-    Matrix<3,1,double> x(5.0,7.0,9.0);
-    Matrix<3,1,double> b;
-    b = A * x;
-    x.print();
+    Matrix<3,3,float> A; 
+    Matrix<3,1,float> b;
+    cout << "Input A: " << endl;
+    A.input();
     A.print();
+    cout << "Input B: " << endl;
+    b.input();
     b.print();
-    cout << "_______________________________" << endl;
-    x = GAUSS::solve(A, b);
-    x.print();
     
+    Matrix<3,1,float> x;
+    x = GAUSS::solve(A, b);
+    cout << "Solved x: " << endl;
+    x.print();
 }

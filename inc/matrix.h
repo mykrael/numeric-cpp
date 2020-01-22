@@ -97,6 +97,7 @@ public:
         return (*this);
     }
 
+    // Printing
     void print(){
         int counter = 0;
         for(auto row: m){
@@ -118,6 +119,38 @@ public:
         }
     }
 
+   friend std::ostream & operator << (std::ostream & out, Matrix mat){
+        out << "[";
+        for(auto row: mat){
+            out << row << ";";
+        }
+        out << " ]";
+        return out;
+    }
+
+    // Inputing
+    void input(){
+        int count = 0;
+        T i;
+        std::cin >> i;
+        while(!std::cin.fail() && count < ROWS * COLS){
+            (*this)[count/COLS][count%COLS] = i;
+            count++;
+            if(count%COLS != 0){
+                std::cout << "\x1b[A";
+            }
+            for(int tabs = 0; tabs < count%COLS; tabs++){
+                std::cout << "\t";
+            }
+
+            if(count < ROWS * COLS){
+                std::cin >> i;
+            }
+        }
+        std::cout << std::endl;
+       
+
+    }
 
     // Basic Calculation
     Matrix operator+(Matrix other){
@@ -171,12 +204,4 @@ public:
    }
 
         
-   friend std::ostream & operator << (std::ostream & out, Matrix mat){
-        out << "[";
-        for(auto row: mat){
-            out << row << ";";
-        }
-        out << " ]";
-        return out;
-    }
 };
