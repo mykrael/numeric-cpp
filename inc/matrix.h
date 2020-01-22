@@ -112,7 +112,7 @@ public:
                 if(counter == ROWS * COLS){
                     std::cout << "]";
                 }else{
-                    std::cout << "\t";
+                    std::cout << "\t\t";
                 }
             }
             std::cout <<  std::endl;
@@ -200,6 +200,17 @@ public:
    friend Matrix operator*(T scalar, Matrix mat){
        Matrix result;      
        result = mat * scalar;
+       return result;
+   }
+
+   // Transpose
+   Matrix<COLS, ROWS, T> operator~(){
+       Matrix<COLS, ROWS, T> result;
+       for(int row = 0; row < ROWS; row++){
+           for(int col = 0; col < COLS; col++){
+               result[col][row] = (*this)[row][col];
+           }
+       }
        return result;
    }
 

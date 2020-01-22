@@ -4,15 +4,10 @@ using namespace std;
 #include "gauss-elimination.h"
 
 int main(){
-    Matrix<3,3,float> A; 
-    Matrix<3,3,float> B;
-    cout << "Input A: " << endl;
+    Matrix<3,2,float> A; 
+    cout << "Input A:" << endl;
     A.input();
-    A.print();
-    cout << "Input B: " << endl;
-    B.input();
-    B.print();
-    
-    A = A - B;
-    A.print();
+    Matrix<3,3,float> result;
+    result = A * ~A;
+    result.print();
 }
