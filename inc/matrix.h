@@ -193,7 +193,7 @@ public:
 
    Matrix operator-(Matrix other){
        Matrix result;
-       result = (*this) + other;
+       result = (*this) + T(-1) * other;
        return result;
    }
 

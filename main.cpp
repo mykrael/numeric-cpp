@@ -5,16 +5,14 @@ using namespace std;
 
 int main(){
     Matrix<3,3,float> A; 
-    Matrix<3,1,float> b;
+    Matrix<3,3,float> B;
     cout << "Input A: " << endl;
     A.input();
     A.print();
     cout << "Input B: " << endl;
-    b.input();
-    b.print();
+    B.input();
+    B.print();
     
-    Matrix<3,1,float> x;
-    x = GAUSS::solve(A, b);
-    cout << "Solved x: " << endl;
-    x.print();
+    A = A - B;
+    A.print();
 }
