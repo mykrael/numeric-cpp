@@ -4,10 +4,36 @@ using namespace std;
 #include "gauss-elimination.h"
 
 int main(){
-    Matrix<3,2,float> A; 
-    cout << "Input A:" << endl;
+    Matrix<3,3,float> A;
+    Matrix<3,1,float> b;
+    Matrix<3,1,float> x;
+    
+
+    cout << "Enter a regular 3x3 matrix: " << endl;
     A.input();
-    Matrix<3,3,float> result;
-    result = A * ~A;
-    result.print();
+    cout << "Enter a 3x1 vector as the right side of the equation: " << endl;
+    b.input();
+
+    x = GAUSS::solve(A, b);
+    
+
+    cout << "Solution: " << endl;
+    x.print();
+
+    cout << "matrix * solution = right side:" << endl;
+    (A*x).print();
+
+    GAUSS::LRCombination<3,float> LRCom = GAUSS::LRdecomp(A, b);
+    cout << "Result of LR-Decomposition:" << endl;
+    cout << "L: " << endl;
+    LRCom.L.print();
+
+    cout << "R: " << endl;
+    LRCom.R.print();
+
+    cout << "solution: " << endl;
+    x = LRCom.solve(b);
+    x.print();
+    
+
 }
