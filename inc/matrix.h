@@ -117,6 +117,7 @@ public:
             }
             std::cout <<  std::endl;
         }
+        std::cout << "\n" <<  std::endl;
     }
 
    friend std::ostream & operator << (std::ostream & out, Matrix mat){
