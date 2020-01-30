@@ -14,6 +14,7 @@ int main(){
     cout << "Enter a 3x1 vector as the right side of the equation: " << endl;
     b.input();
 
+    cout << "---------------------------------" << endl;
     x = GAUSS::solve(A, b);
     
 
@@ -23,7 +24,7 @@ int main(){
     cout << "matrix * solution = right side:" << endl;
     (A*x).print();
 
-    GAUSS::LRCombination<3,float> LRCom = GAUSS::LRdecomp(A, b);
+    GAUSS::LRCombination<3,float> LRCom(A,b);
     cout << "Result of LR-Decomposition:" << endl;
     cout << "L: " << endl;
     LRCom.L.print();
@@ -34,6 +35,10 @@ int main(){
     cout << "solution: " << endl;
     x = LRCom.solve(b);
     x.print();
+
+    cout << "L*R : " << endl;
+
+    (LRCom.L*LRCom.R).print();
     
 
 }
