@@ -1,8 +1,57 @@
+#pragma once
+#include "math-functions.cpp"
 #include "matrix.h"
 #include "triangular-matrix-substitution.h"
 
 namespace GAUSS{
 
+    enum PIVOT_SEARCH{
+        NO_SEARCH,
+        COLLUMN_SEARCH
+    };
+
+    template<int N, class T>
+        bool collumnPivotSearch(Matrix<N, N, T> A, Matrix<N, N, T>& P_j, int j){
+            int search_index = j;
+            int max_index = search_index;
+            T max_entry = T(0);
+            bool found_non_zero = max_entry == T(0);
+            while(search_index < N){
+                search_index++;
+                T entry = A[j][search_index];
+                if(TYPESPECIFIC::abs(entry > max_entry)){
+                    max_index = search_index;
+                    max_entry = entry;
+                    found_non_zero = true;
+                }
+            } 
+            for(int row = 0; row < N; row++){
+                for(int col = 0; col < N; col++){
+                    T entry = T(0);
+                    if(row == j){
+                        if(col == max_index){
+                            entry = T(1);
+                        }else{
+                            entry = T(0);
+                        }
+                    }else if(row == max_index){
+                        if(col == j){
+                            entry = T(1);
+                        }else{
+                            entry = T(0);
+                        }
+                    }else{
+                        if(col == row){
+                            entry = T(1);
+                        }else{
+                            entry = T(0);
+                        }
+                    }
+                    P_j[row][col] = entry;
+                }
+            }
+            return found_non_zero;
+        }
 
     template<int N, class T>
         bool gaussStep(Matrix<N, N, T>& A, Matrix<N, 1, T>& b, Matrix<N, N, T>& L_j, 
@@ -59,40 +108,28 @@ namespace GAUSS{
 
 
     template<int N, class T>
-        Matrix<N, 1, T> solve(Matrix<N, N, T> A, Matrix<N, 1, T> b){
+        Matrix<N, 1, T> solve(Matrix<N, N, T> A, Matrix<N, 1, T> b, PIVOT_SEARCH search_algo = COLLUMN_SEARCH){
             Matrix<N, N, T> L_j;
             Matrix<N, N, T> L_j_inv;
+            Matrix<N, N, T> P_j;
             Matrix<N, 1, T> old_b(b);
             Matrix<N, 1, T> x;
             // Gauss elimination
             for(int j = 0; j < N-1; j++){
-                if(!gaussStep(A, b, L_j, L_j_inv, j)){
-                    std::cout << "Matrix is not regular or a pivot element is zero." << std::endl; 
-                    return old_b;
+                if(search_algo == COLLUMN_SEARCH){
+                    if(!collumnPivotSearch(A, P_j, j)){
+                        std::cout << "ERROR: The Matrix is not regular!" << std::endl;
+                        return old_b;
+                    }
+                    A = P_j * A;
+                    b = P_j * b;
                 }
+                gaussStep(A, b, L_j, L_j_inv, j);
             }
             x = backSub(A, b);
             return x;
         }
-    /*
-    template<int N, class T>
-        LRCombination<N,T> LRdecomp(Matrix<N,N,T> A, Matrix<N,1,T> b){
-            Matrix<N,N,T> L_j;
-            Matrix<N,N,T> L_j_inv;
-            Matrix<N,N,T> L;
-            Matrix<N,N,T> R(A);
-            for(int j = 0; j < N-1; j++){
-                if(!gaussStep(A, b, L_j, L_j_inv, j)){
-                    std::cout << "Matrix is not regular or a pivot element is zero." << std::endl; 
-                    LRCombination<N,T> error;
-                    return error;
-                }
-                R = L_j * R;
-                L = L * L_j_inv;
-            }
-            LRCombination<N,T> result(L, R);
-            return result;
-        }
-        */
+
+
 }
 
