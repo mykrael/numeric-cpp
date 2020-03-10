@@ -3,6 +3,8 @@
 #include "matrix.h"
 #include "triangular-matrix-substitution.h"
 
+//TODO wonder if the LRDecomposition(L,R and L,R,P) constructors are really needed
+
 /*
  * This namespace contains all decomposition and solving methodes that use the
  * gauss elimination algorithm
@@ -146,6 +148,8 @@ namespace GAUSS{
            /*
             * Generate a LR-Decomp from a regular Matrix A 
             * and vector b that form the equation A*x=b with a unknown x
+            * TODO rework: b is actually not required as argument (could be arbituarly chosen)
+            * TODO encapsulate calculation into another function
             */
            LRCombination(Matrix<N,N,T> A, Matrix<N,1,T> b, PIVOT_SEARCH search_algo = COLLUMN_SEARCH){
                 Matrix<N,N,T> L_j_inv;

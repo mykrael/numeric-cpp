@@ -1,3 +1,4 @@
+#pragma once
 #include "matrix.h"
 
 // Backwards substitution for upper right triangular matrix
