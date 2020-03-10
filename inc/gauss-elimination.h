@@ -12,18 +12,18 @@ namespace GAUSS{
 
     template<int N, class T>
         bool collumnPivotSearch(Matrix<N, N, T> A, Matrix<N, N, T>& P_j, int j){
-            int search_index = j;
+            int search_index = j+1;
             int max_index = search_index;
             T max_entry = T(0);
-            bool found_non_zero = max_entry == T(0);
+            bool found_non_zero = !(A[j][j] == T(0));
             while(search_index < N){
-                search_index++;
-                T entry = A[j][search_index];
-                if(TYPESPECIFIC::abs(entry > max_entry)){
+                T entry = A[search_index][j];
+                if(TYPESPECIFIC::abs(entry) > max_entry){
                     max_index = search_index;
                     max_entry = entry;
                     found_non_zero = true;
                 }
+                search_index++;
             } 
             for(int row = 0; row < N; row++){
                 for(int col = 0; col < N; col++){
@@ -55,11 +55,19 @@ namespace GAUSS{
 
     template<int N, class T>
         bool gaussStep(Matrix<N, N, T>& A, Matrix<N, 1, T>& b, Matrix<N, N, T>& L_j, 
-                Matrix<N,N,T>& L_j_inv, int j){
+                Matrix<N,N,T>& L_j_inv, Matrix<N, N, T>& P_j, int j, PIVOT_SEARCH search_algo = COLLUMN_SEARCH){
             Matrix<N, 1, T> x(b);
             Matrix<N, N, T> I;
             L_j = I;
             L_j_inv = I;
+            if(search_algo == COLLUMN_SEARCH){
+                if(!collumnPivotSearch(A, P_j, j)){
+                    std::cout << "ERROR: The Matrix is not regular in step " << j << std::endl;
+                    return false;
+                }
+                A = P_j * A;
+                b = P_j * b;
+            }
             for(int i = j+1; i < N; i++){
                 T l = A[i][j]/A[j][j];
                 L_j[i][j] = -l;
@@ -67,9 +75,6 @@ namespace GAUSS{
                 b[i][0] = b[i][0] - l * b[j][0];
                 for(int k = j; k < N; k++){
                     A[i][k] = A[i][k] - l * A[j][k];
-                    if(j != k && A[i][k] == 0){
-                        return false;
-                    }
                 }
             }
             return true;
@@ -79,28 +84,32 @@ namespace GAUSS{
         struct LRCombination{
            Matrix<N,N,T> L; 
            Matrix<N,N,T> R;
+           Matrix<N,N,T> P;
            LRCombination(Matrix<N,N,T> L, Matrix<N,N,T> R) : L(L), R(R){};
-           LRCombination(Matrix<N,N,T> A, Matrix<N,1,T> b){
+           LRCombination(Matrix<N,N,T> A, Matrix<N,1,T> b, PIVOT_SEARCH search_algo = COLLUMN_SEARCH){
                 Matrix<N,N,T> L_j;
                 Matrix<N,N,T> L_j_inv;
                 Matrix<N,N,T> L;
+                Matrix<N,N,T> P;
+                Matrix<N,N,T> P_j;
                 Matrix<N,N,T> R(A);
+                
                 for(int j = 0; j < N-1; j++){
-                    if(!gaussStep(A, b, L_j, L_j_inv, j)){
-                        std::cout << "Matrix is not regular or a pivot element is zero." << std::endl; 
-                        LRCombination<N,T> error;
+                    if(!gaussStep(A, b, L_j, L_j_inv, P_j, j, search_algo)){
+                        return;
                     }
-                    R = L_j * R;
-                    L = L * L_j_inv;
+                    L = P_j * L * P_j * L_j_inv;
+                    P = P_j * P;
                 }
-                this->R = R;
+                this->R = A;
                 this->L = L;
+                this->P = P;
             }
            LRCombination(){};
            Matrix<N,1,T> solve(Matrix<N,1,T> b){
                Matrix<N,1,T> z;
                Matrix<N,1,T> x;
-               z = forSub(L, b);
+               z = forSub(L, P * b);
                x = backSub(R, z);
                return x;
            }
@@ -116,15 +125,9 @@ namespace GAUSS{
             Matrix<N, 1, T> x;
             // Gauss elimination
             for(int j = 0; j < N-1; j++){
-                if(search_algo == COLLUMN_SEARCH){
-                    if(!collumnPivotSearch(A, P_j, j)){
-                        std::cout << "ERROR: The Matrix is not regular!" << std::endl;
-                        return old_b;
-                    }
-                    A = P_j * A;
-                    b = P_j * b;
-                }
-                gaussStep(A, b, L_j, L_j_inv, j);
+                if(!gaussStep(A, b, L_j, L_j_inv, P_j, j, search_algo)){
+                    return old_b;    
+                };
             }
             x = backSub(A, b);
             return x;

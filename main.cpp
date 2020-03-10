@@ -36,9 +36,9 @@ int main(){
     x = LRCom.solve(b);
     x.print();
 
-    cout << "L*R : " << endl;
+    cout << "P*L*R : " << endl;
 
-    (LRCom.L*LRCom.R).print();
+    (~LRCom.P*LRCom.L*LRCom.R).print();
     
 
 }
